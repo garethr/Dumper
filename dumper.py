@@ -138,6 +138,6 @@ if __name__ == '__main__':
         print "You must pass a configuration file as the first agument"
         sys.exit(2)
 
-    dumper_class = Dumper('mysql')
-    dumper = dumper_class(config)
+    DumperClass = Dumper('mysql')
+    dumper = DumperClass(config)
     dumper.dump()
