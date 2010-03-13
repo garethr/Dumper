@@ -1,20 +1,33 @@
 #!/usr/bin/env python
 
 import os
+import sys
+import ConfigParser
 
 import MySQLdb
 import MySQLdb.cursors
 import simplejson
 
-HOST = "localhost"
-USERNAME = "root"
-PASSWORD = ""
-DATABASE = "dumper"
-PORT = 3306
+config = ConfigParser.RawConfigParser()
+try:
+    config.read(sys.argv[1])
+except IndexError:
+    print "You must pass a configuration file as the first agument"
+    sys.exit(2)
 
-SQL = "SELECT id, name FROM people"
-PATH = "people"
-INDEX = "id"
+try:
+    HOST = config.get('Database', 'host')
+    USERNAME = config.get('Database', 'username')
+    PASSWORD = config.get('Database', 'password')
+    DATABASE = config.get('Database', 'database')
+    PORT = config.getint('Database', 'port')
+
+    SQL = config.get('Options', 'sql')
+    PATH = config.get('Options', 'path')
+    INDEX = config.get('Options', 'index')
+except ConfigParser.NoSectionError, e:
+    print e
+    sys.exit(2)
 
 def create_or_update(content, filename):
     """
