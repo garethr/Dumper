@@ -6,33 +6,32 @@ import ConfigParser
 import MySQLdb
 import MySQLdb.cursors
 
-
 from lib import ensure_dir, output_json, output_xml
-
-try:
-    config = ConfigParser.RawConfigParser()
-    config.read(sys.argv[1])
-except IndexError:
-    print "You must pass a configuration file as the first agument"
-    sys.exit(2)
-
-try:
-    HOST = config.get('Database', 'host')
-    USERNAME = config.get('Database', 'username')
-    PASSWORD = config.get('Database', 'password')
-    DATABASE = config.get('Database', 'database')
-    PORT = config.getint('Database', 'port')
-
-    SQL = config.get('Options', 'sql')
-    PATH = config.get('Options', 'path')
-    INDEX = config.get('Options', 'index')
-except ConfigParser.NoSectionError, e:
-    print e
-    sys.exit(2)
 
 
 if __name__ == '__main__':
+    
+    try:
+        config = ConfigParser.RawConfigParser()
+        config.read(sys.argv[1])
+    except IndexError:
+        print "You must pass a configuration file as the first agument"
+        sys.exit(2)
 
+    try:
+        HOST = config.get('Database', 'host')
+        USERNAME = config.get('Database', 'username')
+        PASSWORD = config.get('Database', 'password')
+        DATABASE = config.get('Database', 'database')
+        PORT = config.getint('Database', 'port')
+
+        SQL = config.get('Options', 'sql')
+        PATH = config.get('Options', 'path')
+        INDEX = config.get('Options', 'index')
+    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError), e:
+        print e
+        sys.exit(2)
+        
     database = MySQLdb.connect(
                 host=HOST,
                 port=PORT,
@@ -47,7 +46,7 @@ if __name__ == '__main__':
 
     # see if the folder PATH exists and if not create it
     if ensure_dir(PATH):
-        print "[Created] %s" % PATH
+        print "\033[1;33m[Created]\033[1;m %s" % PATH
     
     # placeholder for list for index page
     index = []
@@ -68,6 +67,3 @@ if __name__ == '__main__':
     # create the index page
     output_json(index, PATH)
     output_xml(index, PATH)
-    
-
-

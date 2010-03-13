@@ -76,9 +76,9 @@ def output_json(result, record):
     created, updated = create_or_update(output, file_name)
     # print output
     if created:
-        print "[Created] %s" % file_name
+        print "\033[1;33m[Created]\033[1;m %s" % file_name
     if updated:
-        print "[Updated] %s" % file_name
+        print "\033[1;35m[Updated]\033[1;m %s" % file_name
 
 def output_xml(struct, record):
     from lib import dict_to_xml
@@ -96,6 +96,6 @@ def output_xml(struct, record):
     created, updated = create_or_update(output, file_name)
     # print output
     if created:
-        print "[Created] %s" % file_name
+        print "\033[1;33m[Created]\033[1;m %s" % file_name
     if updated:
-        print "[Updated] %s" % file_name
+        print "\033[1;35m[Updated]\033[1;m %s" % file_name

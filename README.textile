@@ -20,8 +20,7 @@ mysql dumper < people.sql -u root
 
 You'll need to install the requirements from the requirements.txt file manually at the moment. Then run the main dumper script like so:
 
-<pre><code>
-python ../dumper.py people.truck
+<pre><code>python ../dumper.py people.truck
 </code></pre>
 
 This should give you something like this output to the console:
