@@ -1,0 +1,35 @@
+Dumper is a static file generator for building simple read only web services. Think "Jekyll":http://github.com/mojombo/jekyll or "Nanoc":http://nanoc.stoneship.org/ but for XML and JSON.
+
+It's very early days at the moment, the current code is not much more than a demo. The vague plan involves:
+
+* bundling commands for deploying changes
+* versioning
+* date based snapshots
+* support for more output formats than JSON and XML
+* support for more backends than just MySQL
+* and some sort of post processing mechanism
+
+h2. Trying Dumper
+
+First you'll need a MySQL database. I've provided a simple table definition and some data to get you started.
+
+<pre><code>cd tests
+mysqladmin create dumper -u root
+mysql dumper < people.sql -u root
+</code></pre>
+
+You'll need to install the requirements from the requirements.txt file manually at the moment. Then run the main dumper script like so:
+
+<pre><code>
+python ../dumper.py people.truck
+</code></pre>
+
+This should give you something like this output to the console:
+
+<pre><code>[Created] people
+[Created] people/1.json
+[Created] people/1.xml
+[Created] people/2.json
+[Created] people/2.xml
+[Created] people.json
+[Created] people.xml</code></pre>
