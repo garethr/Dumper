@@ -1,1 +1,4 @@
 *.pyc
+tests/people.json
+tests/people.xml
+tests/people/
