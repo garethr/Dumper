@@ -2,8 +2,6 @@ import os
 from xml.etree import ElementTree
 from xml.etree.ElementTree import tostring
 
-import simplejson
-
 
 def _ConvertDictToXmlRecurse(parent, dictitem):
     assert type(dictitem) is not type([])
@@ -69,33 +67,4 @@ def ensure_dir(path):
         return True
     return False
 
-def output_json(result, record):
-    file_name = "%s.json" % record
-    # convert the data structure to json
-    output = simplejson.dumps(result)
-    created, updated = create_or_update(output, file_name)
-    # print output
-    if created:
-        print "\033[1;33m[Created]\033[1;m %s" % file_name
-    if updated:
-        print "\033[1;35m[Updated]\033[1;m %s" % file_name
 
-def output_xml(struct, record):
-    from lib import dict_to_xml
-    file_name = "%s.xml" % record
-    # convert the data structure to json
-
-    if type(struct) == dict:
-        output = dict_to_xml(struct, 'element')
-    if type(struct) == list:
-        output = ""
-        for item in struct:
-            output = output + dict_to_xml(item, 'element')
-        output = "<elements>%s</elements>" % output
-
-    created, updated = create_or_update(output, file_name)
-    # print output
-    if created:
-        print "\033[1;33m[Created]\033[1;m %s" % file_name
-    if updated:
-        print "\033[1;35m[Updated]\033[1;m %s" % file_name
