@@ -1,0 +1,11 @@
+[Database]
+host: localhost
+username: root
+password:
+database: dumper
+port: 3306
+
+[Options]
+sql: SELECT id, name FROM people
+path: people
+index: id 
