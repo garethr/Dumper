@@ -6,7 +6,7 @@ def test():
     local('cd tests; python ../dumper.py people.truck')
 
 
-def clean_tests():
+def clean():
     "Remove files created during test run"
     local('rm -rf tests/people')
     local('rm -rf tests/people.xml')
