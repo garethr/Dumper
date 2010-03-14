@@ -11,17 +11,20 @@ It's very early days at the moment, the current code is not much more than a dem
 
 h2. Trying Dumper
 
-First you'll need a MySQL database. I've provided a simple table definition and some data to get you started.
+First you'll need a MySQL database. I've provided a simple table definition and some data to get you started. See the tests folder for an example sql file.
 
-<pre><code>cd tests
+<pre><code>
 mysqladmin create dumper -u root
 mysql dumper < people.sql -u root
 </code></pre>
 
-You'll need to install the requirements from the requirements.txt file manually at the moment. Then run the main dumper script like so:
+You can now install dumper using the provided setup.py file. This should install all the requirements. I'd recommend using virtualenv to sandbox your python environment.
 
-<pre><code>python ../dumper.py people.truck
-</code></pre>
+<pre><code>python setup.py install</code></pre>
+
+You should now have the dumper command line application available on your path. Dumper uses a configuration file to determine which backend to use. Using the example file from the tests directory like so:
+
+<pre><code>dumper people.truck</code></pre>
 
 This should give you something like this output to the console:
 
@@ -32,3 +35,5 @@ This should give you something like this output to the console:
 [Created] people/2.xml
 [Created] people.json
 [Created] people.xml</code></pre>
+
+Run <code>dumper -h</code> for a full list of options.
