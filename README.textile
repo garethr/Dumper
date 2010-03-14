@@ -13,8 +13,7 @@ h2. Trying Dumper
 
 First you'll need a MySQL database. I've provided a simple table definition and some data to get you started. See the tests folder for an example sql file.
 
-<pre><code>
-mysqladmin create dumper -u root
+<pre><code>mysqladmin create dumper -u root
 mysql dumper < people.sql -u root
 </code></pre>
 
