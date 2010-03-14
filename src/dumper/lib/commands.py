@@ -1,7 +1,8 @@
 import os
 import sys
-import ConfigParser
+import shutil
 import getopt
+import ConfigParser
 
 from dumper import Dumper
 
@@ -81,11 +82,11 @@ dumper [options] configuration_file
 
 def clean(directory):
     "Remove everything from the output directory"
-    file_list = os.listdir(directory)
-    for individual_file in file_list: 
-        file_path = "%s/%s" % (directory, individual_file)
-        if os.path.isfile(file_path):
-            os.unlink(file_path)
-            print "\033[1;31m[Deleted]\033[1;m %s" % file_path
-        if os.path.isdir(file_path):
-            print "doesn't delete directories yet %s" % file_path
+
+    for root, dirs, files in os.walk(directory):
+        for f in files:
+            os.unlink(os.path.join(root, f))
+            print "\033[1;31m[Deleted]\033[1;m %s" % f
+        for d in dirs:
+            shutil.rmtree(os.path.join(root, d))
+            print "\033[1;31m[Deleted]\033[1;m %s" % d

@@ -5,7 +5,8 @@ import MySQLdb
 import MySQLdb.cursors
 import simplejson
 
-from lib import ensure_dir, dict_to_xml, create_or_update
+from lib.filesystem import ensure_dir, create_or_update
+from lib import dict_to_xml
 
 
 def Dumper(type):
