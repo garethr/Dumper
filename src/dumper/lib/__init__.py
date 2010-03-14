@@ -66,5 +66,3 @@ def ensure_dir(path):
         os.makedirs(directory)
         return True
     return False
-
-

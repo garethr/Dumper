@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-
 import sys
-import ConfigParser
 
 import MySQLdb
 import MySQLdb.cursors
@@ -128,16 +125,3 @@ class MySQLDumper(BaseDumper):
         # create the index page
         self.output_json(index, self.path)
         self.output_xml(index, self.path)
-
-if __name__ == '__main__':
-    
-    try:
-        config = ConfigParser.RawConfigParser()
-        config.read(sys.argv[1])
-    except IndexError:
-        print "You must pass a configuration file as the first agument"
-        sys.exit(2)
-
-    DumperClass = Dumper('mysql')
-    dumper = DumperClass(config)
-    dumper.dump()
