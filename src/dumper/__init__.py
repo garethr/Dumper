@@ -1,3 +1,4 @@
+import os
 import sys
 import ConfigParser
 
@@ -62,7 +63,6 @@ class BaseDumper(object):
 
         full_path = "%s/%s" % (output_location, self.path)
 
-
         if self.mode == 'individual':
             # see if the folder PATH exists and if not create it
             if ensure_dir(full_path):
@@ -84,6 +84,23 @@ class BaseDumper(object):
                     self.index: result[self.index],
                     "url":  "/%s/%s" % (self.path, result[self.index])
                 })
+                
+            # we may have deleted records and so need to delete files
+            # that are still lying around.
+            
+            # get an up to date list of what is required
+            required_names = []
+            for result in self.results:
+                required_names.append(str(result[self.index]))
+            
+            # compare with a list of files and delete all others
+            existing_names = os.listdir(full_path)
+            for item in existing_names:
+                item_name = item.split('.')[0]
+                if not item_name in required_names:
+                    os.unlink(os.path.join(full_path, item))
+                    print "\033[1;31m[Deleted]\033[1;m %s/%s" % (full_path, item)
+                
             # create the index page
             self.output_json(index, full_path)
             self.output_xml(index, full_path)
@@ -126,7 +143,7 @@ class MySQLDumper(BaseDumper):
         try:
             self.mode = config.getint('Dumper', 'mode')
         except ConfigParser.NoOptionError:
-            self.mode = 'combined' #'individual'
+            self.mode = 'individual'
             
         # create the database connection
         database = MySQLdb.connect(

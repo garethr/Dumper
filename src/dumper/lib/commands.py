@@ -84,18 +84,15 @@ def main(argv):
     
 def usage():
     "Print help information"
-    print """Dumper. Static generator for web services. Usage: 
-    
-dumper [options] command
+    print """Dumper. Static generator for web services. Usage: dumper [options] command
 
 clean                      removes all files from the output directory
 help                       display this help message
 serve                      serve output directory on port 8910
+dump                       create static files
 
 -o, --output [location]    defaults to 'output'
-
-dumper [options] configuration_file
-
+-c, --config [file]        defaults to 'dumper.truck'
 """
 
 def clean(directory):
