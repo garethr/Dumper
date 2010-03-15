@@ -55,10 +55,34 @@ class BaseDumper(object):
         # print output
         self.inform(created, updated, file_name)
         
-    def dump(self):
-        "Stub method, should be implemented by subclasses"
-        pass
+    def dump(self, output_location):
+        "Generate output"
 
+        full_path = "%s/%s" % (output_location, self.path)
+
+        # see if the folder PATH exists and if not create it
+        if ensure_dir(full_path):
+            print "\033[1;33m[Created]\033[1;m %s" % full_path
+
+        # placeholder for list for index page
+        index = []
+        for result in self.results:
+            # filename based on the specified INDEX
+
+            record = "%s/%s" % (full_path, result[self.index])
+            self.output_json(result, record)
+            self.output_xml(result, record)
+
+            # we also want an index page so as we loop through we
+            # create a list of all the individual items based
+            # on the specified index value
+            index.append({
+                self.index: result[self.index],
+                "url":  "/%s/%s" % (self.path, result[self.index])
+            })
+        # create the index page
+        self.output_json(index, full_path)
+        self.output_xml(index, full_path)
 
 class MySQLDumper(BaseDumper):
     "MySQL backend example dumper"
@@ -99,35 +123,7 @@ class MySQLDumper(BaseDumper):
                     passwd=PASSWORD,
                     db=DATABASE)
         # get a cursor to make queries with
-        self.cursor = MySQLdb.cursors.DictCursor(database)
+        cursor = MySQLdb.cursors.DictCursor(database)
         
-    def dump(self, output_location):
-        "Generate output"
-        self.cursor.execute(self.sql)
-        results = self.cursor.fetchall()
-        
-        full_path = "%s/%s" % (output_location, self.path)
-        
-        # see if the folder PATH exists and if not create it
-        if ensure_dir(full_path):
-            print "\033[1;33m[Created]\033[1;m %s" % full_path
-
-        # placeholder for list for index page
-        index = []
-        for result in results:
-            # filename based on the specified INDEX
-
-            record = "%s/%s" % (full_path, result[self.index])
-            self.output_json(result, record)
-            self.output_xml(result, record)
-
-            # we also want an index page so as we loop through we
-            # create a list of all the individual items based
-            # on the specified index value
-            index.append({
-                self.index: result[self.index],
-                "url":  "/%s/%s" % (self.path, result[self.index])
-            })
-        # create the index page
-        self.output_json(index, full_path)
-        self.output_xml(index, full_path)
+        cursor.execute(self.sql)
+        self.results = cursor.fetchall()

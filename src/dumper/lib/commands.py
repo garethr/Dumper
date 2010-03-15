@@ -12,8 +12,8 @@ def main(argv):
     
     # parse out arguments
     try:
-        opts, args = getopt.getopt(argv, "ho:cu",
-           ["help", "output=", "clean"])
+        opts, args = getopt.getopt(argv, "o:c:u",
+           ["output=", "config="])
     except getopt.GetoptError:
         # any errors exit
         usage()
@@ -21,24 +21,37 @@ def main(argv):
     
     # default output to a directory called output
     output = 'output'
+    config = 'dumper.truck'
     
     for opt, arg in opts:
-        if opt in ("-h", "--help"):
-            # asked for help information
-            usage()
-            sys.exit()
-        elif opt in ("-o", "--output"): 
+        if opt in ("-o", "--output"): 
             # set a different output dir
             output = arg
-        elif opt in ("-c", "--clean"):
-            # delete everything from the output dir and exit
-            clean(output)
-            sys.exit()
+        elif opt in ("-c", "--config"): 
+            # set a different config file
+            config = arg
+            
+
     
+    if not argv[-1] in ['help', 'clean', 'dump', 'serve']:
+        # invalid command
+        usage()
+        sys.exit()
+        
+    if argv[-1] == 'help':
+        # asked for help information
+        usage()
+        sys.exit()
+
+    if argv[-1] == 'clean':
+        # delete everything from the output dir and exit
+        clean(output)
+        sys.exit()
+
     # check we have a configuration file passed in, and that the 
     # file exists
     try:
-        if not os.path.isfile(argv[-1]):
+        if not os.path.isfile(config):
             print "You must specify an existing configuration file"
             sys.exit(2)
         
@@ -47,12 +60,12 @@ def main(argv):
         sys.exit(2)
 
     # parse the configuration file
-    config = ConfigParser.RawConfigParser()
-    config.read(argv[-1])
+    configp = ConfigParser.RawConfigParser()
+    configp.read(config)
 
     # get the specified backend from the configuration file
     try:
-        backend = config.get('Dumper', 'backend')
+        backend = configp.get('Dumper', 'backend')
     except (ConfigParser.NoSectionError, ConfigParser.NoOptionError), e:
         # if we don't find anything then exit with an error
         print e
@@ -65,7 +78,7 @@ def main(argv):
         print "Specified backend %s doesn't exist" % backend
         sys.exit(2)
     # instantiate the relevant backend class
-    dumper = DumperClass(config)
+    dumper = DumperClass(configp)
     # and finally create all the files
     dumper.dump(output)
     
@@ -73,11 +86,16 @@ def usage():
     "Print help information"
     print """Dumper. Static generator for web services. Usage: 
     
+dumper [options] command
+
+clean                      removes all files from the output directory
+help                       display this help message
+serve                      serve output directory on port 8910
+
+-o, --output [location]    defaults to 'output'
+
 dumper [options] configuration_file
 
--o, --output [location]    defaults to output
--c, --clean                removes all files from the output directory
--h, --help                 display this help message
 """
 
 def clean(directory):
