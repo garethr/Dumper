@@ -3,10 +3,12 @@ Dumper is a static file generator for building simple read only web services. Th
 It's very early days at the moment, the current code is not much more than a demo. The vague plan involves:
 
 * bundling commands for deploying changes
+* build in web server
 * versioning
 * date based snapshots
 * support for more output formats than JSON and XML
 * support for more backends than just MySQL
+* logging
 * and some sort of post processing mechanism
 
 h2. Trying Dumper
@@ -23,16 +25,16 @@ You can now install dumper using the provided setup.py file. This should install
 
 You should now have the dumper command line application available on your path. Dumper uses a configuration file to determine which backend to use. Using the example file from the tests directory like so:
 
-<pre><code>dumper people.truck</code></pre>
+<pre><code>dumper -c people.truck dump</code></pre>
 
 This should give you something like this output to the console:
 
-<pre><code>[Created] people
-[Created] people/1.json
-[Created] people/1.xml
-[Created] people/2.json
-[Created] people/2.xml
-[Created] people.json
-[Created] people.xml</code></pre>
+<pre><code>[Created] output/people
+[Created] output/people/1.json
+[Created] output/people/1.xml
+[Created] output/people/2.json
+[Created] output/people/2.xml
+[Created] output/people.json
+[Created] output/people.xml</code></pre>
 
-Run <code>dumper -h</code> for a full list of options.
+Run <code>dumper help</code> for a full list of options.
