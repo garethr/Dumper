@@ -21,6 +21,7 @@ class BaseDumper(object):
     
     # control whether or not to print output
     verbosity = 1
+    mode = 'individual'
         
     def inform(self, created, updated, file_name):
         "Simple wrapper for informing the caller about changes"
@@ -43,9 +44,10 @@ class BaseDumper(object):
         "Default xml output"
         file_name = "%s.xml" % record
         # convert the data structure to xml
+        
         if type(struct) == dict:
             output = dict_to_xml(struct, 'element')
-        if type(struct) == list:
+        if type(struct) in (tuple, list):
             output = ""
             for item in struct:
                 output = output + dict_to_xml(item, 'element')
@@ -60,29 +62,35 @@ class BaseDumper(object):
 
         full_path = "%s/%s" % (output_location, self.path)
 
-        # see if the folder PATH exists and if not create it
-        if ensure_dir(full_path):
-            print "\033[1;33m[Created]\033[1;m %s" % full_path
 
-        # placeholder for list for index page
-        index = []
-        for result in self.results:
-            # filename based on the specified INDEX
+        if self.mode == 'individual':
+            # see if the folder PATH exists and if not create it
+            if ensure_dir(full_path):
+                print "\033[1;33m[Created]\033[1;m %s" % full_path
+            
+            # placeholder for list for index page
+            index = []
+            for result in self.results:
+                # filename based on the specified INDEX
 
-            record = "%s/%s" % (full_path, result[self.index])
-            self.output_json(result, record)
-            self.output_xml(result, record)
+                record = "%s/%s" % (full_path, result[self.index])
+                self.output_json(result, record)
+                self.output_xml(result, record)
 
-            # we also want an index page so as we loop through we
-            # create a list of all the individual items based
-            # on the specified index value
-            index.append({
-                self.index: result[self.index],
-                "url":  "/%s/%s" % (self.path, result[self.index])
-            })
-        # create the index page
-        self.output_json(index, full_path)
-        self.output_xml(index, full_path)
+                # we also want an index page so as we loop through we
+                # create a list of all the individual items based
+                # on the specified index value
+                index.append({
+                    self.index: result[self.index],
+                    "url":  "/%s/%s" % (self.path, result[self.index])
+                })
+            # create the index page
+            self.output_json(index, full_path)
+            self.output_xml(index, full_path)
+        elif self.mode == 'combined':
+            self.output_json(self.results, full_path)
+            self.output_xml(self.results, full_path)
+
 
 class MySQLDumper(BaseDumper):
     "MySQL backend example dumper"
@@ -114,6 +122,11 @@ class MySQLDumper(BaseDumper):
             PORT = config.getint('Database', 'port')
         except ConfigParser.NoOptionError:
             PORT = 3306
+            
+        try:
+            self.mode = config.getint('Dumper', 'mode')
+        except ConfigParser.NoOptionError:
+            self.mode = 'combined' #'individual'
             
         # create the database connection
         database = MySQLdb.connect(
