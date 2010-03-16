@@ -23,7 +23,19 @@ class BaseDumper(object):
     # control whether or not to print output
     verbosity = 1
     mode = 'individual'
+    pre_processors = []
+    post_processors = []
         
+    def register_pre(self, processor):
+        "Registers a processor into the processor queue"
+        if processor not in self.pre_processors:
+            self.pre_processors.append(processor)
+            
+    def register_post(self, processor):
+        "Registers a processor into the processor queue"
+        if processor not in self.post_processors:
+            self.post_processors.append(processor)
+    
     def inform(self, created, updated, file_name):
         "Simple wrapper for informing the caller about changes"
         if self.verbosity:
@@ -53,6 +65,10 @@ class BaseDumper(object):
             for item in struct:
                 output = output + dict_to_xml(item, 'element')
             output = "<elements>%s</elements>" % output
+        
+        # we can alter the XML output using code if we want
+        for processor in self.post_processors:
+            output = processor('xml', output)
 
         created, updated = create_or_update(output, file_name)
         # print output
@@ -70,7 +86,13 @@ class BaseDumper(object):
             
             # placeholder for list for index page
             index = []
-            for result in self.results:
+            
+            results = self.results
+            # we can alter the data structure using code if we want
+            for processor in self.pre_processors:
+                results = processor(results)
+            
+            for result in results:
                 # filename based on the specified INDEX
 
                 record = "%s/%s" % (full_path, result[self.index])

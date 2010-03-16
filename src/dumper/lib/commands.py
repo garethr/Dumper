@@ -30,8 +30,6 @@ def main(argv):
         elif opt in ("-c", "--config"): 
             # set a different config file
             config = arg
-            
-
     
     if not argv[-1] in ['help', 'clean', 'dump', 'serve']:
         # invalid command
@@ -79,6 +77,16 @@ def main(argv):
         sys.exit(2)
     # instantiate the relevant backend class
     dumper = DumperClass(configp)
+    
+    """
+    def blank(input, format):
+        return ""
+    
+    # sample callback, needs to come from provided modules
+    # in the configuration file
+    dumper.register_post(blank)
+    """
+    
     # and finally create all the files
     dumper.dump(output)
     
