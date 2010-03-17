@@ -78,15 +78,33 @@ def main(argv):
     # instantiate the relevant backend class
     dumper = DumperClass(configp)
     
-    """
-    def blank(input, format):
-        return ""
-    
-    # sample callback, needs to come from provided modules
-    # in the configuration file
-    dumper.register_post(blank)
-    """
-    
+    try:
+        post_processors = configp.get('Dumper', 'post_processors')
+    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError), e:
+        post_processors = []
+
+    try:
+        pre_processors = configp.get('Dumper', 'pre_processors')
+    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError), e:
+        pre_processors = []
+
+    # we can register procesorrs to act on the output
+    for processors in [
+        ('pre', pre_processors),
+        ('post', post_processors)
+    ]:
+        if processors[1]:
+            for module_name in processors[1].split(','):
+                try:
+                    module = __import__(module_name.strip())
+                    if processors[0] == 'pre':
+                        dumper.register_pre(module.processor)
+                    elif processors[0] == 'post':
+                        dumper.register_post(module.processor)
+                except ImportError:
+                    print "Processors %s doesn't exist on python path" % module_name.strip()
+                    sys.exit(2)
+
     # and finally create all the files
     dumper.dump(output)
     

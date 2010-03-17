@@ -68,7 +68,7 @@ class BaseDumper(object):
         
         # we can alter the XML output using code if we want
         for processor in self.post_processors:
-            output = processor('xml', output)
+            output = processor(output)
 
         created, updated = create_or_update(output, file_name)
         # print output
@@ -91,7 +91,7 @@ class BaseDumper(object):
             # we can alter the data structure using code if we want
             for processor in self.pre_processors:
                 results = processor(results)
-            
+
             for result in results:
                 # filename based on the specified INDEX
 
@@ -127,8 +127,13 @@ class BaseDumper(object):
             self.output_json(index, full_path)
             self.output_xml(index, full_path)
         elif self.mode == 'combined':
-            self.output_json(self.results, full_path)
-            self.output_xml(self.results, full_path)
+            results = self.results
+            # we can alter the data structure using code if we want
+            for processor in self.pre_processors:
+                results = processor(results)
+            
+            self.output_json(results, full_path)
+            self.output_xml(results, full_path)
 
 
 class MySQLDumper(BaseDumper):
