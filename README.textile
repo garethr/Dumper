@@ -61,11 +61,11 @@ path: people
 index: id
 backend: mysql
 post_processors: examplepre
-pre_processors: examplepost</pre></code>
+pre_processors: examplepost</code></pre>
 
 These are simply python modules on your python path. Note that the directory where you run dumper is added to the python path to make it easier. Processors run one after the other, passing the output of the first to the second and so on. Preprocessors take the python list or dictionary with the results of the SQL query. Postprocessors take the XML string before it is written to disk. A simple processor might just delete all XML output like so:
 
 <pre><code>def processor(input):
-    return ""</pre></code>
+    return ""</code></pre>
 
 More likely you'll want to do validation on data based on an external, non-sql source, or you'll want to transform the XML to match a specific output format.
