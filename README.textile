@@ -1,15 +1,14 @@
 Dumper is a static file generator for building simple read only web services. Think "Jekyll":http://github.com/mojombo/jekyll or "Nanoc":http://nanoc.stoneship.org/ but for XML and JSON.
 
-It's very early days at the moment, the current code is not much more than a demo. The vague plan involves:
+Still to do:
 
 * bundling commands for deploying changes
-* build in web server
+* build in web server for testing
 * versioning
 * date based snapshots
 * support for more output formats than JSON and XML
 * support for more backends than just MySQL
-* logging
-* and some sort of post processing mechanism
+* logging other than command line output
 
 h2. Trying Dumper
 
@@ -23,7 +22,21 @@ You can now install dumper using the provided setup.py file. This should install
 
 <pre><code>python setup.py install</code></pre>
 
-You should now have the dumper command line application available on your path. Dumper uses a configuration file to determine which backend to use. Using the example file from the tests directory like so:
+You should now have the dumper command line application available on your path. Dumper uses a configuration file to determine which backend to use. An example configuration file is shown below:
+
+<pre><code>[Dumper]
+path: people
+index: id
+backend: mysql
+
+[Database]
+sql: SELECT id, name FROM people
+host: localhost
+username: root
+password:
+database: dumper</code></pre>
+
+Using the example file from the tests directory like so:
 
 <pre><code>dumper -c people.truck dump</code></pre>
 
@@ -38,3 +51,21 @@ This should give you something like this output to the console:
 [Created] output/people.xml</code></pre>
 
 Run <code>dumper help</code> for a full list of options.
+
+h2. Processors
+
+Processors allow you to massage the data taken from the SQL query or to modify the XML output to match your preferred schema. You specify processors in the ini file like so:
+
+<pre><code>[Dumper]
+path: people
+index: id
+backend: mysql
+post_processors: examplepre
+pre_processors: examplepost</pre></code>
+
+These are simply python modules on your python path. Note that the directory where you run dumper is added to the python path to make it easier. Processors run one after the other, passing the output of the first to the second and so on. Preprocessors take the python list or dictionary with the results of the SQL query. Postprocessors take the XML string before it is written to disk. A simple processor might just delete all XML output like so:
+
+<pre><code>def processor(input):
+    return ""<pre><code>
+
+More likely you'll want to do validation on data based on an external, non-sql source, or you'll want to transform the XML to match a specific output format.
