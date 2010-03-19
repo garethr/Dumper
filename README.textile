@@ -69,3 +69,20 @@ These are simply python modules on your python path. Note that the directory whe
     return ""</code></pre>
 
 More likely you'll want to do validation on data based on an external, non-sql source, or you'll want to transform the XML to match a specific output format.
+
+h2. Subclassing
+
+But what if you want complete control over how things are serialized. Or even how things are output? You can register your own subclasses as backends and use those.
+
+The following is just a noddy example. With this class available you can use the backend 'mysql2' and it will work just the same as the 'mysql' backend.
+
+<pre><code>from dumper import BaseDumper, MySQLDumper
+
+class MySQLDumper2(MySQLDumper, BaseDumper):
+    @classmethod
+    def is_dumper_for(cls, type):
+	"The string passed in to the factory to get this class"
+	return type == 'mysql2'</code></pre>
+
+In order for the backend detection to work you need to get these classes imported. For that we have the import parameter in the config file which allows for a comma seperated list of import commands.
+
