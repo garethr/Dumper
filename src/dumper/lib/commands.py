@@ -24,10 +24,10 @@ def main(argv):
     config = 'dumper.truck'
     
     for opt, arg in opts:
-        if opt in ("-o", "--output"): 
+        if opt in ("-o", "--output"):
             # set a different output dir
             output = arg
-        elif opt in ("-c", "--config"): 
+        elif opt in ("-c", "--config"):
             # set a different config file
             config = arg
     
@@ -68,6 +68,19 @@ def main(argv):
         # if we don't find anything then exit with an error
         print e
         sys.exit(2)
+        
+    # get a list of custom dumper classes we want to use and import them
+    
+    try:
+        imports = configp.get('Dumper', 'imports')
+    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError), e:
+        # it's optional to include custom classes so ignore if missing
+        pass
+        
+    # regex validate import command
+       
+    for module in imports.split(','):
+        exec module
 
     # work out which class to use via the factory
     try:

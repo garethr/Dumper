@@ -9,4 +9,5 @@ if __name__ == '__main__':
     # we add the directory where this script is run to the python path
     # so we can import processor modules easily
     sys.path.insert(0, os.getcwd())
+    
     main(sys.argv[1:])

@@ -25,6 +25,12 @@ class BaseDumper(object):
     mode = 'individual'
     pre_processors = []
     post_processors = []
+    path = ""
+    index = ""
+    results = []
+        
+    def __init__(self, config):
+        pass
         
     def register_pre(self, processor):
         "Registers a processor into the processor queue"
@@ -47,32 +53,35 @@ class BaseDumper(object):
     def output_json(self, struct, record):
         "Default json output"
         file_name = "%s.json" % record
-        # convert the data structure to json
-        output = simplejson.dumps(struct)
-        created, updated = create_or_update(output, file_name)
-        # print output
-        self.inform(created, updated, file_name)
+        # if we have data
+        if struct:
+            # convert the data structure to json
+            output = simplejson.dumps(struct)
+            created, updated = create_or_update(output, file_name)
+            # print output
+            self.inform(created, updated, file_name)
 
     def output_xml(self, struct, record):
         "Default xml output"
         file_name = "%s.xml" % record
-        # convert the data structure to xml
+        # if we have data
+        if struct:
+            # convert the data structure to xml
+            if type(struct) == dict:
+                output = dict_to_xml(struct, 'element')
+            if type(struct) in (tuple, list):
+                output = ""
+                for item in struct:
+                    output = output + dict_to_xml(item, 'element')
+                output = "<elements>%s</elements>" % output
         
-        if type(struct) == dict:
-            output = dict_to_xml(struct, 'element')
-        if type(struct) in (tuple, list):
-            output = ""
-            for item in struct:
-                output = output + dict_to_xml(item, 'element')
-            output = "<elements>%s</elements>" % output
-        
-        # we can alter the XML output using code if we want
-        for processor in self.post_processors:
-            output = processor(output)
+            # we can alter the XML output using code if we want
+            for processor in self.post_processors:
+                output = processor(output)
 
-        created, updated = create_or_update(output, file_name)
-        # print output
-        self.inform(created, updated, file_name)
+            created, updated = create_or_update(output, file_name)
+            # print output
+            self.inform(created, updated, file_name)
         
     def dump(self, output_location):
         "Generate output"
